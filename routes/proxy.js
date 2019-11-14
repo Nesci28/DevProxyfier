@@ -6,12 +6,18 @@ router.get('*', async (req, res) => {
   const url = `${process.env.PROXY_URL}${req.originalUrl}`;
   const key = getHeadersKey(req.originalUrl);
   if (key) {
-    const data = await axios.get(url, {
-      headers: {
-        key,
-      },
-    });
-    res.json(data.data);
+    axios
+      .get(url, {
+        headers: {
+          Key: key,
+        },
+      })
+      .then(data => {
+        res.json(data.data);
+      })
+      .catch(err => {
+        res.json(err.response.data);
+      });
   } else {
     res.json({
       error: 'Missing API KEY detected!',
@@ -23,12 +29,18 @@ router.post('*', async (req, res) => {
   const url = `${process.env.PROXY_URL}${req.originalUrl}`;
   const key = getHeadersKey(req.originalUrl);
   if (key) {
-    const data = await axios.post(url, req.body, {
-      headers: {
-        key,
-      },
-    });
-    res.json(data.data);
+    axios
+      .post(url, req.body, {
+        headers: {
+          key,
+        },
+      })
+      .then(data => {
+        res.json(data.data);
+      })
+      .catch(err => {
+        res.json(err.response.data);
+      });
   } else {
     res.json({
       error: 'Missing API KEY detected!',
@@ -44,7 +56,6 @@ function getHeadersKey(originalUrl) {
       .join('_')
       .toUpperCase()}`;
     if (process.env[getProcessEnv]) {
-      console.log('process.env[process] :', process.env[getProcessEnv]);
       return process.env[getProcessEnv];
     }
   }
